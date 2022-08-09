@@ -13,13 +13,23 @@ bot = commands.Bot(
         name=f"{prefix}help")
 )
 
-@bot.command(aliases=["ulang"])
+@bot.command(aliases=["ulang", "유러", "유랭", "u"])
 async def ulang_command(ctx, convert: str, *, text: str):
     convert = "en" if convert == "암호화" else "de" if convert == "복호화" else "en"
     convert_text = ulang.encryption(text) if convert == "en" else ulang.decryption(text)
-    await ctx.channel.send("```" + convert_text + "```")  
+    
+    embed = discord.Embed(
+        title=f"\"{text}\" 를 변환합니다....",
+        color=0x99ddff
+    )
+    embed.add_field(
+        name="변환된 문장",
+        value=convert_text
+    )
+    embed.set_footer(text="개발자 github : https://github.com/beomjinu/lelle")
+    await ctx.channel.send(embed=embed)  
 
-@bot.command(aliases=["stock"])
+@bot.command(aliases=["stock", "주식", "s"])
 async def stock_command(ctx, type: str, code: str):
     if type == "조회":
         _stock = stock.stock(code)
@@ -34,6 +44,8 @@ async def stock_command(ctx, type: str, code: str):
             value=_stock.get_price(),
             inline=True
         )
+
+        embed.set_footer(text="개발자 github : https://github.com/beomjinu/lelle")
 
         await ctx.channel.send(embed=embed)
 
