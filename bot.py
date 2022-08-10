@@ -1,9 +1,11 @@
-import discord
+import discord, json
 from discord.ext import commands
-from _module import ulang, stock
+from _module import ulang, stock, Dday
 
-with open("data.txt", "r") as file:
-    prefix, token = file.read().split(",")
+with open("data.json", "r") as file:
+    json_data = json.load(file)
+
+token, prefix = json_data["bot"]["token"], json_data["bot"]["prefix"]
 
 bot = commands.Bot(
     command_prefix=prefix,
@@ -38,7 +40,6 @@ async def stock_command(ctx, type: str, code: str):
             title=f"{_stock.get_name()} | {code}",
             color=0x99ddff
         )
-
         embed.add_field(
             name="현재가",
             value=_stock.get_price(),
@@ -51,7 +52,6 @@ async def stock_command(ctx, type: str, code: str):
 
     elif type == "검색":
         stock_list = stock.get_stock_list(code)
-        
         embed = discord.Embed(
             title=f"\"{code}\"를 검색한 결과.. ",
             color=0x99ddff
@@ -75,5 +75,25 @@ async def stock_command(ctx, type: str, code: str):
 
         await ctx.channel.send(embed=embed)
 
+@bot.command(aliases=["dday", "디데이", "d"])
+async def dday_command(ctx, command: str, date=None):
+    dd = Dday.uld()
+    user_id = str(ctx.author.id)
+
+    if command in ["등록", "upload", "u"]:
+        dd.upload(user_id=user_id, date=date)
+
+        ctx.channel.send("등록 완료")
+
+    elif command in ["삭제", "delete", "d"]:
+        dd.delete(user_id=user_id)
+
+        ctx.channel.send("삭제 완료")
+
+    elif command in ["조회", "보기", "load"]:
+        data = dd.load(user_id=user_id)
+        dday = Dday.d_day(data["date"])
+
+        ctx.channel.send(("D+" if dday > 0 else "D") + str(dday) if dday != 0 else "D_Day!")
 
 bot.run(token)
