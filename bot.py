@@ -2,9 +2,7 @@ import discord, json
 from discord.ext import commands
 from _module import ulang, stock, Dday
 
-with open("data.json", "r") as file:
-    json_data = json.load(file)
-
+with open("data.json", "r") as file: json_data = json.load(file)
 token, prefix = json_data["bot"]["token"], json_data["bot"]["prefix"]
 
 bot = commands.Bot(
@@ -47,7 +45,6 @@ async def stock_command(ctx, type: str, code: str):
         )
 
         embed.set_footer(text="개발자 github : https://github.com/beomjinu/lelle")
-
         await ctx.channel.send(embed=embed)
 
     elif type == "검색":
@@ -72,7 +69,6 @@ async def stock_command(ctx, type: str, code: str):
                 )
 
         embed.set_footer(text="개발자 github : https://github.com/beomjinu/lelle")
-
         await ctx.channel.send(embed=embed)
 
 @bot.command(aliases=["dday", "디데이", "d"])
@@ -82,15 +78,13 @@ async def dday_command(ctx, command: str, date=None):
 
     if command in ["등록", "upload", "u"]:
         dd.upload(user_id=user_id, date=date)
-
         await ctx.channel.send("등록 완료")
 
     elif command in ["삭제", "delete", "d"]:
         dd.delete(user_id=user_id)
-
         await ctx.channel.send("삭제 완료")
 
-    elif command in ["조회", "보기", "load"]:
+    elif command in ["조회", "보기", "load", "l"]:
         data = dd.load(user_id=user_id)
         if not data:
             await ctx.channel.send("등록된 디데이가 없음")
