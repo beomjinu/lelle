@@ -26,7 +26,7 @@ async def ulang_command(ctx, convert: str, *, text: str):
         name="변환된 문장",
         value=convert_text
     )
-    embed.set_footer(text="개발자 github : https://github.com/beomjinu/lelle")
+    embed.set_footer(text="개발자: '^'#2854")
     await ctx.channel.send(embed=embed)  
 
 @bot.command(aliases=["stock", "주식", "s"])
@@ -44,7 +44,7 @@ async def stock_command(ctx, type: str, code: str):
             inline=True
         )
 
-        embed.set_footer(text="개발자 github : https://github.com/beomjinu/lelle")
+        embed.set_footer(text="개발자: '^'#2854")
         await ctx.channel.send(embed=embed)
 
     elif type == "검색":
@@ -68,7 +68,7 @@ async def stock_command(ctx, type: str, code: str):
                     inline=False
                 )
 
-        embed.set_footer(text="개발자 github : https://github.com/beomjinu/lelle")
+        embed.set_footer(text="개발자: '^'#2854")
         await ctx.channel.send(embed=embed)
 
 @bot.command(aliases=["dday", "디데이", "d"])
@@ -77,8 +77,11 @@ async def dday_command(ctx, command: str, date=None):
     user_id = str(ctx.author.id)
 
     if command in ["등록", "upload", "u"]:
-        dd.upload(user_id=user_id, date=date)
-        await ctx.channel.send("등록 완료")
+        if not date:
+            await ctx.channel.send("날짜 형식이 올바르지 않습니다.")
+        else:
+            dd.upload(user_id=user_id, date=date)
+            await ctx.channel.send("등록 완료")
 
     elif command in ["삭제", "delete", "d"]:
         dd.delete(user_id=user_id)
