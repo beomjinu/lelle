@@ -1,4 +1,3 @@
-from ast import Delete
 import pymongo, json, datetime
 
 class uld:
