@@ -83,17 +83,19 @@ async def dday_command(ctx, command: str, date=None):
     if command in ["등록", "upload", "u"]:
         dd.upload(user_id=user_id, date=date)
 
-        ctx.channel.send("등록 완료")
+        await ctx.channel.send("등록 완료")
 
     elif command in ["삭제", "delete", "d"]:
         dd.delete(user_id=user_id)
 
-        ctx.channel.send("삭제 완료")
+        await ctx.channel.send("삭제 완료")
 
     elif command in ["조회", "보기", "load"]:
         data = dd.load(user_id=user_id)
-        dday = Dday.d_day(data["date"])
-
-        ctx.channel.send(("D+" if dday > 0 else "D") + str(dday) if dday != 0 else "D_Day!")
+        if not data:
+            await ctx.channel.send("등록된 디데이가 없음")
+        else:
+            dday = Dday.d_day(data["date"])
+            await ctx.channel.send(("D+" if dday > 0 else "D") + str(dday) if dday != 0 else "D_Day!")
 
 bot.run(token)
