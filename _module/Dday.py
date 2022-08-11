@@ -11,11 +11,8 @@ class uld:
 
     def upload(self, user_id: str, date: str): # date format is "2022-01-01"
         self.collection.update_one(
-            {
-                "user_id": user_id
-            },
-            {
-                "$set": {
+            {"user_id": user_id},
+            {"$set": {
                     "date": date,
                     "upload_time": str(datetime.date.today()) 
                 }
