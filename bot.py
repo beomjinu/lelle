@@ -1,6 +1,6 @@
 import discord, json
 from discord.ext import commands
-from _module import ulang, stock, Dday
+from _module import ulang, stock, Dday, profile_message 
 
 with open("data.json", "r") as file: json_data = json.load(file)
 token, prefix = json_data["bot"]["token"], json_data["bot"]["prefix"]
@@ -72,7 +72,7 @@ async def stock_command(ctx, type: str, code: str):
         await ctx.channel.send(embed=embed)
 
 @bot.command(aliases=["dday", "디데이", "d"])
-async def dday_command(ctx, command: str, date=None):
+async def dday_command(ctx, command: str, date: str=None):
     dd = Dday.uld()
     user_id = str(ctx.author.id)
 
@@ -94,5 +94,28 @@ async def dday_command(ctx, command: str, date=None):
         else:
             dday = Dday.d_day(data["date"])
             await ctx.channel.send(("D+" if dday > 0 else "D") + str(dday) if dday != 0 else "D_Day!")
+
+@bot.command(aliases=["한마디", "소개", "pm"])
+async def pm_command(ctx, command: str, message: str=None):
+    pm = profile_message.uld()
+    user_id = str(ctx.author.id)
+
+    if command in ["등록", "upload", "u"]:
+        if not message:
+            await ctx.channel.send("한마디 형식이 올바르지 않습니다")
+        else:
+            pm.upload(user_id=user_id, message=message)
+            await ctx.channel.send("등록 완료")
+
+    elif command in ["삭제", "delete", "d"]:
+        pm.delete(user_id=user_id)
+        await ctx.channel.send("삭제 완료")
+
+    elif command in ["조회", "보기", "load", "l"]:
+        load = pm.load(user_id=user_id)
+        if not load:
+            await ctx.channel.send("등록된 한마디가 없습니다")
+        else:
+            await ctx.channel.send(load)
 
 bot.run(token)
