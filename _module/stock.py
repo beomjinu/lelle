@@ -54,9 +54,9 @@ class favorites:
         with open("data.json", "r") as file: json_data = json.load(file)
         mongodb_url = json_data["mongo_db"]["url"]
         client = pymongo.MongoClient(mongodb_url)
-        db = client["stock_favorites"]
+        db = client["discord_bot"]
 
-        self.collection = db["d_day"]
+        self.collection = db["stock_favorites"]
         self.user_id = user_id
 
     def upload(self, code: str):
