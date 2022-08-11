@@ -1,3 +1,0 @@
-discord
-bs4
-pymongo
