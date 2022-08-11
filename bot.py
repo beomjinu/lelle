@@ -30,44 +30,69 @@ async def ulang_command(ctx, convert: str, *, text: str):
     await ctx.channel.send(embed=embed)  
 
 @bot.command(aliases=["stock", "주식", "s"])
-async def stock_command(ctx, type: str, code: str):
+async def stock_command(ctx, type: str, code: str=None):
     if type == "조회":
-        _stock = stock.stock(code)
+        if not code:
+            await ctx.channel.send("코드가 입력되지 않았습니다.")
+        else:
+            _stock = stock.stock(code)
 
-        embed = discord.Embed(
-            title=f"{_stock.get_name()} | {code}",
-            color=0x99ddff
-        )
-        embed.add_field(
-            name="현재가",
-            value=_stock.get_price(),
-            inline=True
-        )
-
-        await ctx.channel.send(embed=embed)
+            embed = discord.Embed(
+                title=f"{_stock.get_name()} | {code}",
+                color=0x99ddff
+            )
+            embed.add_field(
+                name="현재가",
+                value=_stock.get_price(),
+                inline=True
+            )
+            await ctx.channel.send(embed=embed)
 
     elif type == "검색":
-        stock_list = stock.get_stock_list(code)
-        embed = discord.Embed(
-            title=f"\"{code}\"를 검색한 결과.. ",
-            color=0x99ddff
-        )
-
-        if len(stock_list) == 0:
-            embed.add_field(
-                name=f"검색 결과가 없습니다.",
-                value="검색어를 확인해주세요. (해외 주식은 조회 불가능 합니다.)",
-                inline=False
-            )
+        if not code:
+            await ctx.channel.send("코드가 입력되지 않았습니다.")
         else:
-            for i in range(len(stock_list)):
+            stock_list = stock.get_stock_list(code)
+            embed = discord.Embed(
+                title=f"\"{code}\"를 검색한 결과.. ",
+                color=0x99ddff
+            )
+            if len(stock_list) == 0:
                 embed.add_field(
-                    name=f"{i+1}. {stock_list[i][0]}",
-                    value=f"코드 : {stock_list[i][1]}",
+                    name=f"검색 결과가 없습니다.",
+                    value="검색어를 확인해주세요. (해외 주식은 조회 불가능 합니다.)",
                     inline=False
                 )
+            else:
+                for i in range(len(stock_list)):
+                    embed.add_field(
+                        name=f"{i+1}. {stock_list[i][0]}",
+                        value=f"코드 : {stock_list[i][1]}",
+                        inline=False
+                    )
+            await ctx.channel.send(embed=embed)
 
-        await ctx.channel.send(embed=embed)
+    elif type in ["등록", "upload", "u"]:
+        if not code:
+            await ctx.channel.send("코드가 입력되지 않았습니다.")
+        else:
+            sf = stock.favorites(user_id=str(ctx.author.id))
+            sf.upload(code)
+            await ctx.channel.send("등록 완료")
+
+    elif type in ["삭제", "delete", "d"]:
+        sf = stock.favorites(user_id=str(ctx.author.id))
+        sf.delete()
+        await ctx.channel.send("삭제 완료")
+
+    elif type in ["보기", "load", "l"]:
+        sf = stock.favorites(user_id=str(ctx.author.id))
+        load = sf.load()
+
+        if not load:
+            await ctx.channel.send("등록된 관심종목이 없습니다.")
+        else:
+            await ctx.channel.send(load)
 
 @bot.command(aliases=["dday", "디데이", "d"])
 async def dday_command(ctx, command: str, date: str=None):
