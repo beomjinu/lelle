@@ -5,7 +5,7 @@
 ## 사용해 보기
 ### 1. 환경
 - python: 3.8.0
-- 필요모듈: discord, pymongo, bs4 ... 등
+- 필요모듈: discord, pymongo, pymongo[srv], bs4, requests ... 등
 - database: mongodb (atlas)
 
 ### 2. data.json 파일 생성 후 작성
