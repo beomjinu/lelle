@@ -2,9 +2,7 @@ import pymongo, json, datetime
 
 class uld:
     def __init__(self):
-        with open("data.json", "r") as file:
-            json_data = json.load(file)
-
+        with open("data.json", "r") as file:json_data = json.load(file)
         mongodb_url = json_data["mongo_db"]["url"]
         client = pymongo.MongoClient(mongodb_url)
         db = client["discord_bot"]
