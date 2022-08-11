@@ -1,6 +1,6 @@
 from urllib import parse
 from bs4 import BeautifulSoup
-import requests
+import requests, json, pymongo, datetime
 
 def get_search_url(name: str):
     base_url = "https://finance.naver.com"
@@ -48,6 +48,36 @@ class stock:
         price = self.soup.select_one(selector).text
 
         return price if comma else int(price.replace(",", ""))
+
+class favorites:
+    def __init__(self, user_id):
+        with open("data.json", "r") as file: json_data = json.load(file)
+        mongodb_url = json_data["mongo_db"]["url"]
+        client = pymongo.MongoClient(mongodb_url)
+        db = client["stock_favorites"]
+
+        self.collection = db["d_day"]
+        self.user_id = user_id
+
+    def upload(self, code: str):
+        self.collection.update_one(
+            {"user_id": self.user_id},
+            {"$set": {
+                    "code": code,
+                    "upload_time": str(datetime.date.today()) 
+                }
+            },
+            upsert=True
+        )
+    
+    def load(self):
+        try:
+            return self.collection.find_one({"user_id":self.user_id})["code"]
+        except:
+            return None
+        
+    def delete(self):
+        self.collection.delete_one({"user_id":self.user_id})
 
 if __name__ == "__main__":
     samsung = stock("005930")
