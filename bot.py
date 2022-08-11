@@ -10,7 +10,7 @@ bot = commands.Bot(
     status=discord.Status.online,
     activity=discord.Activity(
         type=discord.ActivityType.listening,
-        name=f"{prefix}help")
+        name=f"{prefix}도움말")
 )
 
 @bot.command(aliases=["ulang", "유러", "유랭", "u"])
@@ -144,8 +144,8 @@ async def pm_command(ctx, command: str, message: str=None):
 @bot.command(aliases=["프로필", "profile", "p"])
 async def profile_command(ctx, member: discord.Member=None):
     member = ctx.author if not member else member
-    
-    dd, pm = Dday.uld(), profile_message.uld()
+
+    dd, pm, sf = Dday.uld(), profile_message.uld(), stock.favorites(str(member.id))
 
     d_day = dd.load(user_id=str(member.id))
     if not d_day:
@@ -154,7 +154,15 @@ async def profile_command(ctx, member: discord.Member=None):
         d_day = Dday.d_day(d_day["date"])
         d_day = ("D" + ("+" if d_day > 0 else "") + str(d_day)) if d_day != 0 else "D_DAY!!"
 
-    message = "등록된 한마디가 없습니다" if not pm.load(user_id=str(member.id)) else pm.load(user_id=str(member.id))
+    message = "등록된 한마디가 없습니다." if not pm.load(user_id=str(member.id)) else pm.load(user_id=str(member.id))
+
+    stock_code = sf.load()
+
+    if not stock_code:
+        sc = "등록된 관심종목이 없습니다."
+    else:
+        sc = stock.stock(stock_code)
+        sc = f"{sc.get_name()}: {sc.get_price()}"
 
     embed = discord.Embed(
         title=f"{member.name} 님의 프로필",
@@ -176,6 +184,12 @@ async def profile_command(ctx, member: discord.Member=None):
     embed.add_field(
         name="한마디",
         value=message,
+        inline=False
+    )
+
+    embed.add_field(
+        name="관심종목",
+        value=sc,
         inline=False
     )
 
